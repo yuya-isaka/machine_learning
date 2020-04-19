@@ -6,6 +6,7 @@ from statistics import mean
 
 np.seterr(divide='ignore', invalid='ignore')
 
+
 def csv_to_data(directory, n, aged_n):
     """ 欲しいcsvファイルの数を指定したら，綺麗にしたデータを返してくれる関数
     argument
@@ -77,8 +78,6 @@ def generate_data(directory, n, aged_n):
     renew_data, reaged_data = change_data(new_data, aged_data)
 
     return renew_data, reaged_data, new_data, aged_data
-
-
 
 
 def kmeans_algorithm(data, cluster_num, centers):
@@ -216,6 +215,7 @@ def silhouette(centers, cluster_point, neighbor_point, renovate_data, idx_list):
 
     return svi_mean
 
+
 def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
 
     data, aged_data, csv_data, csv_aged_data = generate_data('fresh_aged_ieice', search_FPGA_num, aged_search_FPGA_num)
@@ -278,4 +278,4 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
 
 
 
-main(search_FPGA_num=2, aged_search_FPGA_num=2, cluster_num=6)
+main(search_FPGA_num=4, aged_search_FPGA_num=2, cluster_num=7)
