@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import copy
 from statistics import mean
+import pickle
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -246,6 +247,9 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
                 acn = k
 
         acn_list.append(acn)
+        f = open('acn_list.binaryfile', 'wb')
+        pickle.dump(acn_list, f)
+        f.close()
 
     for aged_fpga_num in range(aged_search_FPGA_num):
 
@@ -270,6 +274,9 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
                 aged_acn = k
 
         aged_acn_list.append(aged_acn)
+        f = open('aged_acn_list.binaryfile', 'wb')
+        pickle.dump(aged_acn_list, f)
+        f.close()
 
     for i, value in enumerate(acn_list):
         print('new_FPGA:{}, ACN{}'.format(i+1, value))
@@ -278,4 +285,4 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
 
 
 
-main(search_FPGA_num=4, aged_search_FPGA_num=2, cluster_num=7)
+main(search_FPGA_num=50, aged_search_FPGA_num=2, cluster_num=9)
