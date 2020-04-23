@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.pardir)
+from dataset.fpga_fp_data import generate_data
 import matplotlib.pyplot as plt              
 import numpy as np
 import pandas as pd
@@ -6,32 +10,6 @@ from statistics import mean
 import pickle
 
 np.seterr(divide='ignore', invalid='ignore')
-
-
-def csv_to_data(directory, n, aged_n):
-    """ 欲しいcsvファイルの数を指定したら，綺麗にしたデータを返してくれる関数
-    argument
-    directory: csvファイルがあるディレクトリ名
-    n: 欲しいFPGAのデータの数(0 - 50)
-    aged_n: 欲しいAged_FPGAのデータの数(0 - 2)
-
-    return
-    data: 取り出したFPGAのcsvデータ(148, 33)
-    aged_n: 取り出したAged_FPGAのデータ(148, 33)
-    """
-
-    new_data = []
-    aged_data = []
-
-    for i in range(1, n+1):
-        tmp = pd.read_csv(directory+'/s'+str(i)+'.csv', header=None).values
-        new_data.append(tmp)
-
-        if aged_n and 1 <= i <= aged_n:
-            tmp = pd.read_csv(directory+'/s'+str(i)+'_aged.csv', header=None).values
-            aged_data.append(tmp)
-
-    return np.array(new_data), np.array(aged_data)
 
 
 def change_data(new_data, aged_data):
@@ -68,14 +46,14 @@ def change_data(new_data, aged_data):
     return np.array(renew_data), np.array(reaged_data)
 
 
-def generate_data(directory, n, aged_n):
+def generate_data_kmeans(directory, n, aged_n):
     """
     csvデータを綺麗に整えて返す．
     (4884, 3)
     データ数4884, 特徴量3
     """
     
-    new_data, aged_data = csv_to_data(directory, n, aged_n)
+    new_data, aged_data = generate_data(directory, n, aged_n)
     renew_data, reaged_data = change_data(new_data, aged_data)
 
     return renew_data, reaged_data, new_data, aged_data
@@ -136,6 +114,7 @@ def kmeans_plus_plus(data, cluster_num):
 def kmeans(data, cluster_num):
     """
     データをkmeansアルゴリズムでクラスタリング
+    sseは今回は使っていない
     """
 
     centers = kmeans_plus_plus(data, cluster_num)
@@ -219,7 +198,7 @@ def silhouette(centers, cluster_point, neighbor_point, renovate_data, idx_list):
 
 def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
 
-    data, aged_data, csv_data, csv_aged_data = generate_data('fresh_aged_ieice', search_FPGA_num, aged_search_FPGA_num)
+    data, aged_data, csv_data, csv_aged_data = generate_data_kmeans('fresh_aged_ieice', search_FPGA_num, aged_search_FPGA_num)
 
     acn_list = []
     aged_acn_list = []
@@ -230,7 +209,7 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
         acn_value = -float('inf')
 
         for k in range(2, cluster_num+1):
-            idx_list, sse_list, centers = kmeans(data[fpga_num], k)
+            idx_list, _, centers = kmeans(data[fpga_num], k)
             renovate_data = renovate(idx_list, csv_data[fpga_num])
 
             svi_mean_list = []
@@ -257,7 +236,7 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
         aged_acn_value = -float('inf')
 
         for k in range(2, cluster_num+1):
-            aged_idx_list, aged_sse_list, aged_centers = kmeans(aged_data[aged_fpga_num], k)
+            aged_idx_list, _, aged_centers = kmeans(aged_data[aged_fpga_num], k)
             aged_renovate_data = renovate(aged_idx_list, csv_aged_data[aged_fpga_num])
 
             aged_svi_mean_list = []
@@ -285,4 +264,4 @@ def main(search_FPGA_num, aged_search_FPGA_num, cluster_num):
 
 
 
-main(search_FPGA_num=50, aged_search_FPGA_num=2, cluster_num=9)
+main(search_FPGA_num=2, aged_search_FPGA_num=2, cluster_num=2)

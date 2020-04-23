@@ -16,6 +16,7 @@ def csv_to_data(directory, data_n):
 
     return np.array(data)
 
+
 def csv_to_aged_data(directory, aged_data_n):
     aged_data = []
 
@@ -31,6 +32,10 @@ def csv_to_aged_data(directory, aged_data_n):
 
 
 def generate_data(directory, data_n, aged_data_n):
+    """
+    data(指定数，148，33)
+    aged_data(指定数，148，33)
+    """
     
     if os.path.isfile('FPGA_data.binaryfile'):
         f = open('FPGA_data.binaryfile', 'rb')
@@ -49,6 +54,3 @@ def generate_data(directory, data_n, aged_data_n):
         aged_data = csv_to_aged_data(directory, aged_data_n)
 
     return data, aged_data
-
-
-
