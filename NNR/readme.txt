@@ -1,0 +1,1 @@
+python generate_nnr_data.py -> 残差データ生成
