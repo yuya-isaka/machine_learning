@@ -60,7 +60,7 @@ def generate_nnr(data_n=50, aged_data_n=2):
     """
     残差集合のデータ生成
     """
-    data, aged_data = generate_data('fresh_aged_ieice', data_n, aged_data_n)
+    data, aged_data = generate_data('fresh_aged_ieice', data_n, aged_data_n) #import関数
 
     residual_data = load('residual_data.binaryfile', data_n, data)
     aged_residual_data = load('aged_residual_data.binaryfile', aged_data_n, aged_data)
