@@ -305,6 +305,12 @@ plt.xlabel("Sample number")
 plt.ylabel("Anomaly score")
 plt.show()
 
+"""
+次はそれぞれのFPGAの中での分布を調べてみる
+そこでの異常値を調べて
+調べてどうするんだよ
+
+"""
 # y = 11
 # x = 5
 # fig,ax = plt.subplots(y,x,figsize=(20,20))
