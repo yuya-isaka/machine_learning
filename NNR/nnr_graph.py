@@ -39,3 +39,9 @@ for i in range(1):
         dummy = sns.distplot(aged_data[count], ax=ax[j])
         count += 1
 plt.show()
+
+weights = np.ones_like(np.array(aged_data[0]))/float(len(np.array(aged_data[0])))
+
+plt.hist(aged_data[0], weights=weights)
+plt.show()
+
