@@ -203,35 +203,6 @@ F統計量を計算する関数を作りヒストグラムで表してみる
 ホテリング理論によると異常度 a(x′) はデータ数Nが十分に大きい時、自由度1のカイ二乗分布に従うということが数学的に証明できます。
 """
 
-# mu = np.mean(data)
-# N=len(data)
-# sig =(np.sum( (data-mu)**2 ))/N
-# sig = np.sqrt(sig)
- 
-# a = ( (data- mu)/sig )**2
-# import scipy.stats as stats
-# a_th =stats.chi2.ppf(q=0.95, df=1)
-# print(a_th)
-# #3.841458820694124
- 
-# plt.plot(a)
-# plt.plot(a_th*np.ones(len(a)), c="r")
-# plt.title("Anomaly Of Dates")
-# plt.xlabel("sample number")
-# plt.ylabel("anomaly")
-# plt.show()
-
-"""
-縦軸に
-αx
- を取って各データの異常度をプロットしています。赤線より上にあるデータが異常値と判断されます。
-
-ホテリングのT2
-理論は、実際には異常値が一つもなくても必ず異常値があるという判定を下すので、完全に鵜呑みにするのは微妙です
-
-次は多次元に拡張してやってみる
-4884この次元があると考える
-"""
 
 # # 標本平均
 # mean = mean(data)
@@ -257,60 +228,18 @@ F統計量を計算する関数を作りヒストグラムで表してみる
 # plt.show()
 
 
-residual_data, aged_residual_data = generate_nnr()
-
-data = []
-for i in range(50):
-    data.append(residual_data[i].flatten())
-    
-for i in range(2):
-    data.append(aged_residual_data[i].flatten())
-    
-data = np.array(data)
- 
-
-# 標本平均
-mean_list = []
-for x in data:
-    mean_list.append(mean(x))
-
-mn = mean(mean_list)
-
-# 標本分散
-variance_list = []
-for x in data:
-    variance_list.append(variance(x))
-
-va = variance(variance_list)
-
-# 異常度
-anomaly_scores = []
-for x in data:
-    anomaly_score = np.sum((x - mn)**2 / va)
-    anomaly_scores.append(anomaly_score)
-
-anomaly_scores = np.array(anomaly_scores)
-
-print(anomaly_scores)
-print(anomaly_scores.shape)
-
-# カイ二乗分布による1%水準の閾値
-threshold = stats.chi2.interval(0.95, 1)[1]
-
-# 結果の描画
-num = np.arange(1, 53)
-plt.plot(num, anomaly_scores, "o", color = "b")
-plt.plot([0,53],[threshold, threshold], 'k-', color = "r", ls = "dashed")
-plt.xlabel("Sample number")
-plt.ylabel("Anomaly score")
-plt.show()
-
 """
 次はそれぞれのFPGAの中での分布を調べてみる
 そこでの異常値を調べて
 調べてどうするんだよ
 
 """
+
+
+
+
+
+
 # y = 11
 # x = 5
 # fig,ax = plt.subplots(y,x,figsize=(20,20))
