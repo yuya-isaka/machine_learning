@@ -12,36 +12,36 @@ import seaborn as sns
 
 residual_data, aged_residual_data = generate_nnr_data.generate_nnr()
 
-# data = []
-# for i in range(50):
-#     data.append(np.ndarray.flatten(residual_data[i]))
-# data = np.array(data)
-
-aged_data = []
+data = []
+for i in range(50):
+    data.append(residual_data.flatten())
 for i in range(2):
-    aged_data.append(np.ndarray.flatten(aged_residual_data[i]))
-aged_data = np.array(aged_data)
+    data.append(aged_residual_data.flatten())
+data = np.array(data)
 
-print(aged_data.shape)
+fig,ax = plt.subplots(6,10,figsize=(20,10))
+count = 0
+for i in range(6):
+    for j in range(10):
+        if count >= 52:
+            break
+        dummy = sns.distplot(data[count], ax=ax[i, j])
+        count += 1
+    if count >= 52:
+        break
 
-# fig,ax = plt.subplots(5,10,figsize=(20,10))
+plt.show()
+
+# fig,ax = plt.subplots(1, 2, figsize=(20, 10))
 # count = 0
-# for i in range(5):
-#     for j in range(10):
-#         dummy = sns.distplot(data[count], ax=ax[i, j])
+# for i in range(1):
+#     for j in range(2):
+#         dummy = sns.distplot(aged_data[count], ax=ax[j])
 #         count += 1
 # plt.show()
 
-fig,ax = plt.subplots(1, 2, figsize=(20, 10))
-count = 0
-for i in range(1):
-    for j in range(2):
-        dummy = sns.distplot(aged_data[count], ax=ax[j])
-        count += 1
-plt.show()
+# weights = np.ones_like(np.array(aged_data[0]))/float(len(np.array(aged_data[0])))
 
-weights = np.ones_like(np.array(aged_data[0]))/float(len(np.array(aged_data[0])))
-
-plt.hist(aged_data[0], weights=weights)
-plt.show()
+# plt.hist(aged_data[0], weights=weights)
+# plt.show()
 

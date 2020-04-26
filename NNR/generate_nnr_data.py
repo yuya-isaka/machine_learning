@@ -31,8 +31,9 @@ def generate_residual_data(data_n, data):
                     if 0 <= next_y < 148 and 0 <= next_x < 33:
                         data_list.append(data[i, next_y, next_x])
 
+                #data_list = np.array(data_list)
                 data_mean = mean(data_list)
-                residual_data[i, j, k] = data[i, j, k] - data_mean
+                residual_data[i, j, k] = np.abs(data[i, j, k] - data_mean)
 
     return residual_data
 
@@ -62,8 +63,10 @@ def generate_nnr(data_n=50, aged_data_n=2):
     """
     data, aged_data = generate_data('fresh_aged_ieice', data_n, aged_data_n) #import関数
 
-    residual_data = load('residual_data.binaryfile', data_n, data)
-    aged_residual_data = load('aged_residual_data.binaryfile', aged_data_n, aged_data)
+    # residual_data = load('residual_data.binaryfile', data_n, data)
+    # aged_residual_data = load('aged_residual_data.binaryfile', aged_data_n, aged_data)
+    residual_data = generate_residual_data(data_n, data)
+    aged_residual_data = generate_residual_data(aged_data_n, aged_data)
 
     return residual_data, aged_residual_data
 
