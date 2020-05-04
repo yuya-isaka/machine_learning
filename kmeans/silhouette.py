@@ -213,7 +213,7 @@ def kmeans_plus_plus(data, cluster_num):
 
     probability = np.repeat(1/feature_num, feature_num)
     centers[0] = np.random.choice(data, 1, p=probability)
-    distance[0] = np.sum((data - centers[0])**2)
+    distance[0] = np.sum((abs(data - centers[0]))**2)
 
     for k in range(1, cluster_num):
         np.random.seed(seeds*(k+1))
@@ -221,7 +221,7 @@ def kmeans_plus_plus(data, cluster_num):
         probability /= probability.sum() #正規化　probabilities do not sum to 1　と怒られたから
 
         centers[k] = np.random.choice(data, 1, p=probability)
-        distance[k] = np.sum((data - centers[k])**2)
+        distance[k] = np.sum((abs(data - centers[k]))**2)
 
     return centers
 
@@ -248,7 +248,7 @@ def k_means(data, cluster):
         for i,d in enumerate(data):
             min_d = float('inf')# てきとうに大きい数
             for j,c in enumerate(cluster):
-                dist = (d - c)**2
+                dist = (abs(d - c))**2
                 if min_d > dist:
                     min_d = dist
                     prof[i] = j # クラスタの割り当て
@@ -287,15 +287,36 @@ def k_means(data, cluster):
 
     return prof, cluster
 
-def choose_center(center, x):
-    ans = 0
-    tmp = float('inf')
-    for i in range(len(center)):
-        if i != x and tmp >= center[i]:
-            tmp = center[i]
-            ans = i
+def choose_center(i, x, tmp_list):
+    tmp = []
+    for j in range(len(i.center)):
+        if j != x:
+            tmp_list2 = []
+            for k in range(len(i.frequency)):
+                if i.cluster[k] == j:
+                    tmp_list2.append(i.frequency[k])
+            tmp.append(tmp_list2)
 
-    return ans
+    tmp = np.array(tmp)
+
+    nci_list = []
+    for k in tmp:
+        average_list = []
+        for j in tmp_list:
+            nci = np.sum(abs(k - j)) / len(k)
+            average_list.append(nci)
+
+        average_list = np.array(average_list)
+        average_mean = np.mean(average_list)
+
+        nci_list.append(average_mean)
+
+    nci_list = np.array(nci_list)
+
+    a = np.argmin(nci_list)
+
+    return tmp[a]
+
 
 def main():
     fresh, aged = generate_data('fresh_aged_ieice', 50, 2) # (50, 148, 33) (2, 148, 33)
@@ -327,12 +348,7 @@ def main():
                         tmp_list.append(i.frequency[k])
                 tmp_list = np.array(tmp_list)
 
-                neighbor = choose_center(i.center, j)
-                tmp_list2 = []
-                for k in range(len(i.frequency)):
-                    if i.cluster[k] == neighbor:
-                        tmp_list2.append(i.frequency[k])
-                tmp_list2 = np.array(tmp_list2)
+                tmp_list2 = choose_center(i, j, tmp_list)
 
                 #シルエットプロット計算
                 sci_list = [] 
@@ -355,7 +371,7 @@ def main():
         every_cluster_list.append(x_cluster_list)
         print(f'{x}回目')
 
-    f = open('ACN_list_2.binaryfile', 'wb')
+    f = open('ACN_list_3.binaryfile', 'wb')
     pickle.dump(every_cluster_list, f)
     f.close()
 
