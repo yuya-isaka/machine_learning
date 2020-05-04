@@ -324,21 +324,21 @@ def main():
                 tmp_list = [] 
                 for k in range(len(i.frequency)):
                     if i.cluster[k] == j:
-                        tmp_list.append(k)
+                        tmp_list.append(i.frequency[k])
                 tmp_list = np.array(tmp_list)
 
                 neighbor = choose_center(i.center, j)
                 tmp_list2 = []
                 for k in range(len(i.frequency)):
                     if i.cluster[k] == neighbor:
-                        tmp_list2.append(k)
+                        tmp_list2.append(i.frequency[k])
                 tmp_list2 = np.array(tmp_list2)
 
                 #シルエットプロット計算
                 sci_list = [] 
                 for k in tmp_list:
-                    oci = np.sum(tmp_list - k) / (len(tmp_list) - 1)
-                    nci = np.sum(tmp_list2 - k) / len(tmp_list2)
+                    oci = np.sum(abs(tmp_list - k)) / (len(tmp_list) - 1)
+                    nci = np.sum(abs(tmp_list2 - k)) / len(tmp_list2)
                     sci = (nci - oci) / max(nci, oci)
                     sci_list.append(sci)
 
@@ -355,7 +355,7 @@ def main():
         every_cluster_list.append(x_cluster_list)
         print(f'{x}回目')
 
-    f = open('ACN_list.binaryfile', 'wb')
+    f = open('ACN_list_2.binaryfile', 'wb')
     pickle.dump(every_cluster_list, f)
     f.close()
 

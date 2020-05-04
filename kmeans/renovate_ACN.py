@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 import pandas as pd
 
-f = open('acn_list.binaryfile', 'rb') 
+f = open('ACN_list_2.binaryfile', 'rb') 
 aged_acn_list = pickle.load(f)
 f.close()
 
@@ -41,3 +41,6 @@ df = pd.DataFrame(test,
 
 print(df)
         
+
+for i in aged_acn_list:
+    print(i)
