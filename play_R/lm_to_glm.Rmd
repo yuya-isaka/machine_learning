@@ -1,0 +1,147 @@
+
+一般化線形モデルから一般化線形混合モデルへ
+
+線形回帰モデルは，「どんなデータに対してどんなタスクを設定しているか」で使うモデルを考えたほうがいい．
+一般線形モデルは，今回の中では1番厳しい仮定を要請する．
+
+頻度論的統計学において，GLMMまでの流れは「一般線形モデルの置いている仮定をちょっとずつ外していく」感じ．
+
+統計モデルがあくまで「世界の一部を切り取ったもの」で，本来の事象の構造の近似に過ぎないという考え方がある．実際の風景と絵画や写真との関係性に喩えられる．
+
+Rだと一般線形モデルはlm()関数で実行できる．
+
+一般線形モデルの縛り
+どんな制約が与えられてる？
+一般線形モデルは，モデル式としてy = a + bx を扱う．
+
+こうしたモデルで得られた予測値をy＊とおくと，「予実のズレ」を計算できる．
+統計モデリングの分野では，この「予実のズレ」を残差と呼ぶ．
+機械学習であれば「誤差」と呼ぶこともある．
+統計モデリングでは，誤差と残差は若干異なる意味で使われる．
+
+具体的には，真の構造でのズレを誤差，我々が作ったモデルでのズレを残差と呼ぶ．
+
+一般線形モデルは，この残差が(標準)正規分布に従うことを要請するモデル．
+「切片と説明変数の線形和で説明しきれない部分は，確率的に制御できる」ことをかなり強く要請する
+
+```{r}
+library(tidyverse)
+data("trees")
+head(trees, n=10)
+```
+
+このデータのGirthをHeightで回帰してみる．
+
+```{r}
+model_lm <- lm(Girth ~ Height, data=trees)
+summary(model_lm)
+```
+
+Residualsは残差．（予実のズレ）
+これの平均が0であればいい．
+Rでは中央値が出ているが，まあまあ0に近い？
+ちょっと大きい？
+最大値~最小値が左右対称っぽいあたり，「残差が正規分布している」仮定は概ねみたせそう．
+（一般線形モデルの仮定は満たしている）
+
+Coefficientsの項が回帰係数に関する情報
+(Intercept)が切片，y=ax+bのaの部分
+Estimateが推定値，Std.Errorは標準誤差，これは推定値がどれだけの範囲かをとるかざっくり意味する．
+
+t valueは，回帰係数の有意性検定の検定統計量．
+P(>|t|)は有意水準で，0に近ければ近いほどいい．
+
+Residual standard errorは残差の標準誤差．
+小さいほうがいい．
+
+R-wquaredは決定係数．モデルの適合度を意味する．
+F-statisticsはモデル全体のおいて，「全ての回帰係数が0である」という帰無仮説のもと検定を行った結果．基本的には有意になってる．
+
+
+次に標準化をしてみる．
+
+```{r}
+use_trees <- trees %>% 
+  scale() %>% 
+  as.data.frame()
+```
+
+Rはscale()関数がデフォルトで実装されていて，一瞬で標準化できる．
+
+```{r}
+model_lm_scaled <- lm(Girth ~ Height, data = use_trees)
+summary(model_lm_scaled)
+```
+
+残差の中央値が小さく，標準誤差も小さくなっった．
+回帰係数も大きくなり，検定統計量たちは変化ない．
+
+回帰直線を出．
+
+```{r}
+plot_point_scaled <- ggplot2::ggplot(data = use_trees, aes(x=Height, y=Girth))+
+  ggplot2::geom_point() +
+  ggplot2::stat_smooth(method = "lm", se = F)
+
+plot_point_scaled
+```
+
+
+一般化線形モデルは，残差の分布を正規分布意外に拡張する．
+拡張の方針は，a+bxという線形結合を「リンク関数」という関数を通してyに関連づける．
+
+ロジスティック回帰は代表的な一般化線形モデル．
+その名前もリンク関数がロジットリンク関数であるから．
+
+```{r}
+library(tidyverse)
+set.seed(1234)
+
+UseData <- matrix(0,300,10) %>% data.frame()
+for(i in 1:ncol(UseData)) {
+  UseData[,i] <- runif(nrow(UseData)) + rpois(nrow(UseData), rgamma(nrow(UseData),shape=1))
+}
+glm_data <- UseData %>% scale() %>% data.frame()
+
+#正解のパラメータ
+fact <- 3 * glm_data$X10 + 6*glm_data$X3 + 2 * glm_data$X5
+fact <- 1/(1 + 3*exp(-fact)) #ロジット関数
+
+glm_data$y <- 0
+for(i in 1:nrow(glm_data)){
+  #ロジット変換したfactを確率とみなして乱数をブッコム
+  glm_data$y[i] <- rbinom(1, 1, fact[i])
+}
+
+#見栄え
+glm_data <- glm_data %>% 
+  dplyr::arrange(y)
+
+glm_model <- glm(y ~ . , data = glm_data, family = binomial("logit"))
+glm_model %>%  summary
+```
+
+
+ResidualがDeviance Residualに変わってる．
+これは逸脱度と呼ばれている．一般線形モデルにおける残差．
+AICは決定係数の変わり（厳密に計算できないから）
+これが適合度規準になる．
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
