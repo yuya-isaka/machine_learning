@@ -223,7 +223,7 @@ def main():
     nonzero_freshaged = delete_zero(new_freshaged) #(52, 3964)
 
     a = IsolateForest()
-    a.fit(nonzero_freshaged, 10000, 52)
+    a.fit(nonzero_freshaged, 1000, 15)
 
     ans = a.predict(nonzero_freshaged)
 
