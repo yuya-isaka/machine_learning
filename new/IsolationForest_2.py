@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import treelib
-np.random.seed(69)
+np.random.seed(100)
 
 class IsolateTree:
     class __data:
@@ -133,21 +133,24 @@ def main():
     print(data.shape)
 
     model = IsolateForest()
-    sample_list = [10, 15, 20, 26, 30, 35, 40, 45, 52]
-    rank = []
-    for sample in sample_list:
-        model.fit(data, 1000, sample) 
-        result = model.predict(data)
-        tmp = []
-        for i in range(52):
-            tmp.append([result[i], i])
-        tmp.sort()
-        tmp = np.array(tmp)[:,1]
-        rank.append(tmp[47:52])
-    rank = np.array(rank).T
+    tree_list = [100, 1000]
+    sample_list = [10, 20, 30, 40, 50]
+    for tree in tree_list:
+        rank = []
+        for sample in sample_list:
+            model.fit(data, tree, sample) 
+            result = model.predict(data)
+            tmp = []
+            for i in range(52):
+                tmp.append([result[i], i])
+            tmp.sort()
+            tmp = np.array(tmp)[:,1]
+            rank.append(tmp[47:52])
+        rank = np.array(rank).T
 
-    df = pd.DataFrame(rank, columns=sample_list, index=np.arange(1,6))
-    print(df)
+        print(f'木:[{tree}]')
+        df = pd.DataFrame(rank, columns=sample_list, index=np.arange(1,6))
+        print(df)
 
 if __name__ == "__main__":
     main()
