@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import treelib
-
 np.random.seed(69)
+
 class IsolateTree:
     class __data:
         def __init__(self):
@@ -61,7 +61,6 @@ class IsolateTree:
             elif x[node.data.feature_split] >= node.data.threshold_split and child.tag == 'greater ' + str(node.data.threshold_split):
                 return self.__get_path_length(x, child)
 
-
 class IsolateForest:
     def __init__(self):
         self.__trees = []
@@ -102,17 +101,42 @@ def main():
                 if [j,k] in check:
                     data[i, j, k] = 0
 
+    tmp_x = [0, 1, 0, -1]
+    tmp_y = [-1, 0, 1, 0]
+    residual_data = np.zeros_like(data)
+    for i in range(52):
+        for j in range(148):
+            for k in range(33):
+                if data[i, j, k] != 0:
+                    data_list = []
+                    for l in range(4):
+                        next_y = j + tmp_y[l]
+                        next_x = k + tmp_x[l]
+                        if 0 <= next_y < 148 and 0 <= next_x < 33 and data[i, next_y, next_x] != 0:
+                            data_list.append(data[i, next_y, next_x])
+    
+                    data_mean = np.mean(np.array(data_list))
+                    residual_data[i, j, k] = abs(data[i, j, k] - data_mean)
+
     tmp_1 = []
     for i in range(52):
-        tmp_2 = data[i].flatten()
-        tmp_1.append(tmp_2[tmp_2 != 0])
+        tmp_2 = []
+        for j in range(148):
+            for k in range(33):
+                if [j,k] in check:
+                    continue
+                else:
+                    tmp_2.append(residual_data[i, j, k])
+        tmp_1.append(tmp_2)
     data = np.array(tmp_1)
+
+    print(data.shape)
 
     model = IsolateForest()
     sample_list = [10, 15, 20, 26, 30, 35, 40, 45, 52]
     rank = []
     for sample in sample_list:
-        model.fit(data, 1000, sample) # ここをいじる
+        model.fit(data, 1000, sample) 
         result = model.predict(data)
         tmp = []
         for i in range(52):
