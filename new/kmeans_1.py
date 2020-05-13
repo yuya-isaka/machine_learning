@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-np.random.seed(69)
+np.random.seed(100)
 
 def kmeans(data, k):
     """kmeans++"""
@@ -127,9 +127,9 @@ def main():
             index_num, centers = kmeans(data[i], j)
             tmp = silhouette(data[i], index_num, len(centers))
             svi_list.append(tmp)
-            print(j)
+            print(f'{j}回目')
         SVI_list.append(svi_list)
-        print(i+1)
+        print(f'[{i+1}回目]')
 
     ACN_list = []
     ACN_index_list = []
